@@ -1,2 +1,2 @@
-include ':app', ':easydialog'
+include ':app', ':easydialog', ':easyconfig', ':core'
 rootProject.name='EasyLibrary'

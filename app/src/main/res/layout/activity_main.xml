@@ -39,6 +39,12 @@
             android:id="@+id/simple_dialog_multi"
             android:text="SimpleDialogMULTI"
             android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hello World!"
+            android:id="@+id/test"
+         />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

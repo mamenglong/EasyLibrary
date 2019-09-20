@@ -1,9 +1,6 @@
 package com.mml.easydialog.dialog
 
 import android.app.Activity
-import android.widget.Toast
-import com.mml.easydialog.BuildConfig
-import com.mml.easydialog.GlobalContextProvider
 
 
 /**

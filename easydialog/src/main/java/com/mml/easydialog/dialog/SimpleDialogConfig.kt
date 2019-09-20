@@ -1,7 +1,8 @@
 package com.mml.easydialog.dialog
 
 import android.app.Activity
-import com.mml.easydialog.showDebugToast
+import com.mml.core.showDebugToast
+
 
 /**
  * @Author: Menglong Ma

@@ -3,9 +3,9 @@ package com.mml.easydialog.dialog
 import android.app.Activity
 import android.app.AlertDialog
 import android.widget.ArrayAdapter
+import com.mml.core.log
 import com.mml.easydialog.R
-import com.mml.easydialog.log
-import java.lang.NullPointerException
+
 
 import kotlin.collections.ArrayList
 

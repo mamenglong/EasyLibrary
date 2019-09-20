@@ -5,8 +5,8 @@ import android.app.AlertDialog
 import android.widget.ArrayAdapter
 import java.lang.NullPointerException
 import android.widget.EditText
+import com.mml.core.log
 import com.mml.easydialog.R
-import com.mml.easydialog.log
 
 
 /**
