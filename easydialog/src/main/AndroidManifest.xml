@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.mml.easydialog" >
+    <application>
+        <provider
+            android:name="GlobalContextProvider"
+            android:authorities="${applicationId}.GlobalContextProvider"
+            android:exported="false"
+            android:multiprocess="true"/>
+    </application>
+</manifest>
