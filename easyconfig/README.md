@@ -1,6 +1,6 @@
 # AndroidConfig
 >使用kotlin基于委托封装SharePreference
-[![](https://jitpack.io/v/mamenglong/AndroidConfig.svg)](https://jitpack.io/#mamenglong/AndroidConfig)
+[![](https://jitpack.io/v/mamenglong/EasyLibrary.svg)](https://jitpack.io/#mamenglong/EasyLibrary)
 - [README](README.md)
 - [更新日志](UPDATE_LOG.md)
 - 使用
@@ -19,7 +19,7 @@
         - Step 2. Add the dependency
             ```
                 dependencies {
-                        implementation 'com.github.mamenglong:AndroidConfig:Tag'
+                   implementation 'com.github.mamenglong.EasyLibrary:easyconfig:Tag'
                 }
             ```    
     - maven
@@ -35,8 +35,8 @@
       -  Step 2. Add the dependency 
           ``` 
           <dependency>
-              <groupId>com.github.mamenglong</groupId>
-              <artifactId>AndroidConfig</artifactId>
+              <groupId>com.github.mamenglong.EasyLibrary</groupId>
+              <artifactId>easyconfig</artifactId>
               <version>Tag</version>
           </dependency>
           ```
