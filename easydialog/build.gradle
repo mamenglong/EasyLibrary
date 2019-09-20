@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'kotlin-android-extensions'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -35,4 +37,13 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(path: ':core')
+}
+
+publish {
+    userOrg = 'mamenglong'
+    groupId = 'com.github.mamenglong'
+    artifactId = 'easydialog'
+    publishVersion = '1.0'
+    desc = 'A Simple library for Android to use'
+    website = 'https://github.com/mamenglong/EasyLibrary'
 }
