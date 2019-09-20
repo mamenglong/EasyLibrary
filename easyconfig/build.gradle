@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
-project.archivesBaseName ='spConfig'
-group = 'com.mml.EasyConfig'
-version = 'v1.0'
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.mamenglong'
+project.archivesBaseName ='easyconfig'
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.0"
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
         minSdkVersion 15
