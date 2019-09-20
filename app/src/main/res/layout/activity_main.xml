@@ -6,45 +6,55 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
-        <Button
-            android:layout_width="wrap_content"
-            android:id="@+id/easy_dialog"
-            android:text="EasyDialog"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:id="@+id/simple_dialog"
-            android:text="SimpleDialog"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:id="@+id/simple_dialog_list"
-            android:text="SimpleDialogLIST"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:id="@+id/simple_dialog_single"
-            android:text="SimpleDialogSIngle"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:id="@+id/simple_dialog_multi"
-            android:text="SimpleDialogMULTI"
-            android:layout_height="wrap_content"/>
-        <TextView
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/linear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World!"
-            android:id="@+id/test"
-         />
-    </LinearLayout>
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <Button
+                android:id="@+id/easy_dialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EasyDialog" />
+
+            <Button
+                android:id="@+id/simple_dialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SimpleDialog" />
+
+            <Button
+                android:id="@+id/simple_dialog_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SimpleDialogLIST" />
+
+            <Button
+                android:id="@+id/simple_dialog_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SimpleDialogSIngle" />
+
+            <Button
+                android:id="@+id/simple_dialog_multi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SimpleDialogMULTI" />
+
+            <TextView
+                android:id="@+id/test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hello World!" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

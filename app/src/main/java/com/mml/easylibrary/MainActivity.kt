@@ -1,7 +1,10 @@
 package com.mml.easylibrary
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import androidx.core.app.ActivityOptionsCompat
 import com.mml.easyconfig.AndroidConfig
 import com.mml.easyconfig.config.SharedPreferenceDelegate
 import com.mml.easydialog.dialog.*
@@ -11,6 +14,11 @@ class MainActivity : AppCompatActivity() {
 
     var aa by SharedPreferenceDelegate(spName = "test",default = 0)
     var ss by SharedPreferenceDelegate.json<User?>(null,"asad")
+
+    private val map = mutableMapOf<String,Class<*>>(
+//        Pair("bottom_sheet", BottomSheetActivity::class.java)
+
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -19,6 +27,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView() {
+        map.forEach {
+            val button: Button = Button(this)
+            button.text=it.key
+            val cls=it.value
+            button.setOnClickListener {
+                val intent = Intent(this@MainActivity,cls)
+                startActivity(intent)
+            }
+            linear.addView(button)
+        }
         easy_dialog.setOnClickListener {
             /*            val dialog= CustomDialog()
                             .setLayoutRes(R.layout.dialog_easy_sample)
