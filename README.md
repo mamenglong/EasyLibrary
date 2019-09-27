@@ -1,4 +1,4 @@
-# AndroidConfig
+# EasyLibrary
 >封装的一些比较好用的库
 [![](https://jitpack.io/v/mamenglong/EasyLibrary.svg)](https://jitpack.io/#mamenglong/EasyLibrary)
 

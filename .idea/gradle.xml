@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/easyconfig" />
             <option value="$PROJECT_DIR$/easydialog" />
+            <option value="$PROJECT_DIR$/retrofitcoroutinedsllibrary" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

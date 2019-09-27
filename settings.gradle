@@ -1,2 +1,2 @@
-include ':app', ':easydialog', ':easyconfig', ':core'
+include ':app', ':easydialog', ':easyconfig', ':core', ':retrofitcoroutinedsllibrary'
 rootProject.name='EasyLibrary'
