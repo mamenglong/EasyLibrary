@@ -6,6 +6,8 @@
 
 ## 库
 * EasyDialog
-    >封装的dialog,方便使用
+    > 封装的dialog,方便使用
 * EasyConfig
-    >使用kotlin基于委托封装SharePreference
+    > 使用kotlin基于委托封装SharePreference
+* KotlinExtensions
+    > 基于kotlin特性扩展的函数
