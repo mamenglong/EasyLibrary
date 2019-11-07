@@ -38,6 +38,11 @@ object Utils {
             false
         }
     }
+
+    /**
+     * @param context
+     * @param className
+     */
     @JvmStatic
     fun isAccessibilitySettingsOn(context: Context, className: String): Boolean {
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -59,6 +64,7 @@ object Utils {
      *
      * @param context
      * @param file
+     * @param authority
      */
     @JvmStatic
     fun installApk(context: Context, file: File, authority: String) {
@@ -79,17 +85,18 @@ object Utils {
 
     /**
      * 通过包名打开应用
-     *
+     * @param context
+     * @param packageName
      */
     @JvmStatic
-    fun openApp(context: Context, packageName: String){
+    fun openAppByPkg(context: Context, packageName: String){
         val packageManager = context.packageManager
         val intent = packageManager.getLaunchIntentForPackage(packageName)!!
         context.startActivity(intent)
     }
     /**
      * 实现文本复制功能
-     *
+     * @param context
      * @param content 复制的文本
      */
     @JvmStatic
