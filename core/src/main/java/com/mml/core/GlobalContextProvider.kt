@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import android.util.Log
 
 /**
  * desc: 通过ContentProvider提供context.
@@ -12,6 +13,11 @@ import android.net.Uri
  */
 internal class GlobalContextProvider : ContentProvider() {
 
+    private fun log(msg: String, tag:String="tag") {
+        if (BuildConfig.DEBUG) {
+            Log.i(tag, msg)
+        }
+    }
     private var mContext: Context? = null
 
     companion object {
