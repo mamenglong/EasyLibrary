@@ -23,17 +23,12 @@ fun Activity.showDebugToast(msg:String){
 fun Activity.showToast(msg:String){
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
 }
-inline fun <reified T : Activity> Context.startActivity() {
+inline fun <reified T : Activity> Activity.startActivity() {
     val intent = Intent(this, T::class.java)
     startActivity(intent)
 }
-inline fun <reified T : Activity> Context.startActivity(bundle: Bundle) {
+inline fun <reified T : Activity> Activity.startActivity(bundle: Bundle) {
     val intent = Intent(this, T::class.java)
     intent.putExtra("bundle",bundle)
     startActivity(intent)
-}
-fun Any.log(msg: String,tag:String="tag"){
-    if (BuildConfig.DEBUG){
-        Log.i(tag,msg)
-    }
 }

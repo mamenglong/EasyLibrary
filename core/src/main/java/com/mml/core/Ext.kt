@@ -15,14 +15,20 @@ import androidx.appcompat.app.AppCompatActivity
  * Package: com.mml.easydialog
  * Project: EasyLibrary
  */
-fun Any.log(msg: String,tag:String="tag"){
+fun logDebug(msg: String,tag:String="tag"){
     if (BuildConfig.DEBUG){
         Log.i(tag,msg)
     }
+}
+fun log(msg: String,tag:String="tag"){
+        Log.i(tag,msg)
 }
 fun showDebugToast(msg:String)= run {
     if (BuildConfig.DEBUG) {
         Toast.makeText(GlobalContextProvider.getGlobalContext(), msg, Toast.LENGTH_SHORT).show()
     }
+}
+fun showToast(msg:String)= run {
+    Toast.makeText(GlobalContextProvider.getGlobalContext(), msg, Toast.LENGTH_SHORT).show()
 }
 
