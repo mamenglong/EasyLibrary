@@ -1,2 +1,2 @@
-include ':app', ':easydialog', ':easyconfig', ':core', ':retrofitcoroutinedsllibrary', ':kotlinextension', ':utilslibrary'
+include ':app', ':easydialog', ':easyconfig', ':core', ':retrofitcoroutinedsllibrary', ':kotlinextension', ':utilslibrary', ':loggerlibrary'
 rootProject.name='EasyLibrary'

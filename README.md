@@ -20,6 +20,9 @@
 * retrofitcoroutinedsllibrary
     > retrofit coroutinedsl 组合使用
     + implementation 'com.github.mamenglong.EasyLibrary:retrofitcoroutinedsllibrary:1.5'
+* loggerlibrary
+    > 日志库
+    + implementation 'com.github.mamenglong.EasyLibrary:loggerlibrary:1.5'
 * utilsLibrary
-    > core和 KotlinExtensions
+    > core和 KotlinExtensions loggerlibrary
     + implementation 'com.github.mamenglong.EasyLibrary:utils-library:1.5'

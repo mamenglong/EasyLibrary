@@ -35,4 +35,6 @@ dependencies {
     implementation project(path: ':easydialog')
     implementation project(path: ':easyconfig')
     implementation project(path: ':retrofitcoroutinedsllibrary')
+    implementation project(path: ':loggerlibrary')
+
 }
