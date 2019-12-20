@@ -7,3 +7,7 @@ interface Api {
     @POST("user/login")
     suspend fun login(): Call<Any>
 }
+interface Api1 {
+    @POST("user/login")
+    suspend fun login(): Any
+}
