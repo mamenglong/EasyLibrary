@@ -5,19 +5,21 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @UseExperimental(ExperimentalContracts::class)
-inline fun Boolean?.yes(block: () -> Unit): Boolean? {
+inline fun<T> T.isNull(block:()->Unit):T{
     contract {
-        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
-    if (this == true) block()
+    if (this == null){
+        block()
+    }
     return this
 }
-
 @UseExperimental(ExperimentalContracts::class)
-inline fun Boolean?.no(block: () -> Unit): Boolean? {
+inline fun<T> T.notNull(block:(T)->Unit){
     contract {
-        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
-    if (this != true) block()
-    return this
+    this?.let {
+        block(it)
+    }
 }

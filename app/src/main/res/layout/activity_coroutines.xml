@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".coroutines.CoroutinesActivity">
+    <LinearLayout
+        android:id="@+id/app_a_sentence_one_day"
+        android:visibility="visible"
+        tools:visibility="visible"
+        android:gravity="center"
+        android:background="@color/gray"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:text="每日一句"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tv_content"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:text="It is not our abilities that show what we truly are， it is our choices."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tv_note"
+            android:gravity="center"
+            android:text="决定我们成为什么样人的，不是我们的能力，而是我们的选择。"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,15 +7,28 @@
 + 新版,带生命周期观察者
      + activity中使用
         ```kotlin
-            retrofit<Any>(this) {
-                api = RetrofitCreater.create(Api::class.java).login()
-                onSuccess {
-                    Log.e(TAG, "result = ${it?.avatar}")
-                }
-                onFailed { msg, _ ->
-                    Log.e(TAG, "onFailed = $msg")
-                }
-            }
+               retrofit2<SentenceOneDay>(this){
+                   ioScope {
+                       result = ApiCreate.create<API>().aSentenceOneDay()
+                       onSuccess {
+                           tv_content.text = it.content
+                           tv_note.text = it.note
+                           Log.i(TAG, "result = ${it}")
+                       }
+                       onTimeOut{
+                           Log.i(TAG, "onTimeOut ")
+                           showToast("超时连接")
+                       }
+                       onFail { msg ->
+                           Log.i(TAG, "onFailed = $msg")
+                       }
+                       onComplete {
+                           Log.i(TAG, "onComplete ")
+                       }
+                   }
+       
+               }
+
         ```
 <!--旧版-->
 + 旧版
@@ -43,11 +56,13 @@
     + 然后便可在activity中使用
         ```kotlin
             retrofit<Any> {
+                lanch{
                 api = RetrofitCreater.create(Api::class.java).login()
+               }
                 onSuccess {
                     Log.e(TAG, "result = ${it?.avatar}")
                 }
-                onFailed { msg, _ ->
+                onFail { msg, _ ->
                     Log.e(TAG, "onFailed = $msg")
                 }
             }

@@ -1,5 +1,6 @@
 package com.mml.retrofitcoroutinedsllibrary
 
+import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.*
 import java.io.IOException
@@ -12,29 +13,34 @@ import java.net.ConnectException
  * Description: This is CoroutineExt 支持生命周期自动管理取消协程
  * Project:
  */
-fun uiScope(block: suspend CoroutineScope.() -> Unit)= CoroutineScope(Dispatchers.Main).launch {
+fun uiScope(block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.Main).launch {
     block()
 }
 
 fun ioScope(block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.IO).launch {
     block()
 }
-fun  asyncScopeOnUI(block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.IO).async {
-    block.invoke(this)
-}
-fun uiScope(lifecycleOwner: LifecycleOwner, block:suspend CoroutineScope.() -> Unit)= run{
-    val deferred= uiScope(block)
+
+fun asyncScopeOnUI(block: suspend CoroutineScope.() -> Unit) =
+    CoroutineScope(Dispatchers.IO).async {
+        block.invoke(this)
+    }
+
+fun uiScope(lifecycleOwner: LifecycleOwner, block: suspend CoroutineScope.() -> Unit) = run {
+    val deferred = uiScope(block)
     lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
 }
 
-fun  ioScope(lifecycleOwner: LifecycleOwner,block: suspend CoroutineScope.() -> Unit) = run {
-    val deferred= ioScope(block)
+fun ioScope(lifecycleOwner: LifecycleOwner, block: suspend CoroutineScope.() -> Unit) = run {
+    val deferred = ioScope(block)
     lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
 }
-fun asyncScopeOnUI(lifecycleOwner: LifecycleOwner,block: suspend CoroutineScope.() -> Unit) = run {
-    val deferred= asyncScopeOnUI(block)
+
+fun asyncScopeOnUI(lifecycleOwner: LifecycleOwner, block: suspend CoroutineScope.() -> Unit) = run {
+    val deferred = asyncScopeOnUI(block)
     lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
 }
+
 /**
  * 扩展函数,协程实现网路请求
  * @param dsl [是带接收者的函数字面量]
@@ -42,7 +48,7 @@ fun asyncScopeOnUI(lifecycleOwner: LifecycleOwner,block: suspend CoroutineScope.
  */
 fun <T> CoroutineScope.retrofit(dsl: RetrofitCoroutineDSL<T>.() -> Unit): Job {
     //在主线程中开启协程
-  return  this.launch(Dispatchers.Main) {
+    return this.launch(Dispatchers.Main) {
         val coroutine = RetrofitCoroutineDSL<T>().apply(dsl)
         coroutine.api?.let { call ->
             //async 并发执行 在IO线程中
@@ -76,7 +82,10 @@ fun <T> CoroutineScope.retrofit(dsl: RetrofitCoroutineDSL<T>.() -> Unit): Job {
                             //判断status 为1 表示获取数据成功
                             coroutine.onSuccess?.invoke(response.body()!!.data)
                         } else {
-                            coroutine.onFail?.invoke(response.body()?.msg ?: "返回数据为空", response.code())
+                            coroutine.onFail?.invoke(
+                                response.body()?.msg ?: "返回数据为空",
+                                response.code()
+                            )
                         }
                     } else {
                         coroutine.onFail?.invoke(response.errorBody().toString(), response.code())
@@ -88,22 +97,43 @@ fun <T> CoroutineScope.retrofit(dsl: RetrofitCoroutineDSL<T>.() -> Unit): Job {
     }
 }
 
-fun <T> CoroutineScope.retrofit(lifecycleOwner: LifecycleOwner,dsl: RetrofitCoroutineDSL<T>.() -> Unit) {
+fun <T> CoroutineScope.retrofit(
+    lifecycleOwner: LifecycleOwner,
+    dsl: RetrofitCoroutineDSL<T>.() -> Unit
+) {
     //在主线程中开启协程
-   lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(retrofit(dsl)))
+    lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(retrofit(dsl)))
 }
 
-fun <T> CoroutineScope.retrofit2(lifecycleOwner: LifecycleOwner,dsl: CoroutineDSL<T>.() -> Unit) {
+fun <T> retrofit2(lifecycleOwner: LifecycleOwner, dsl: CoroutineDSL<T>.() -> Unit) {
     //在主线程中开启协程
     uiScope(lifecycleOwner) {
-        val coroutine =CoroutineDSL<T>().apply(dsl)
+        val coroutine = CoroutineDSL<T>().apply(dsl)
         try {
-            coroutine.result?.let { result ->
-                coroutine.onSuccess?.invoke(result)
+            val begin = System.currentTimeMillis()
+            var isBreak: Boolean = false
+            out@ while (System.currentTimeMillis() - begin <= coroutine.connectTimeOut) {
+                Log.i("retrofit2", "while")
+                coroutine.result?.let {
+                    coroutine.onSuccess?.invoke(it)
+                    isBreak = true
+                }
+                if (isBreak) {
+                    break@out
+                }
             }
-        }catch (e:Exception){
+            Log.i("retrofit2", "end while")
+            if (!isBreak) {
+                if (coroutine.result != null) {
+                    coroutine.onSuccess?.invoke(coroutine.result!!)
+                } else {
+                    coroutine.onTimeOut?.invoke()
+                }
+            }
+        } catch (e: Exception) {
             coroutine.onFail?.invoke(e.toString())
+        } finally {
+            coroutine.onComplete?.invoke()
         }
-        coroutine.onComplete?.invoke()
     }
 }

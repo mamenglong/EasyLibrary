@@ -4,10 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import androidx.core.app.ActivityOptionsCompat
 import com.mml.easyconfig.AndroidConfig
 import com.mml.easyconfig.config.SharedPreferenceDelegate
 import com.mml.easydialog.dialog.*
+import com.mml.easylibrary.coroutines.CoroutinesActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -16,8 +16,7 @@ class MainActivity : AppCompatActivity() {
     var ss by SharedPreferenceDelegate.json<User?>(null,"asad")
 
     private val map = mutableMapOf<String,Class<*>>(
-//        Pair("bottom_sheet", BottomSheetActivity::class.java)
-
+        Pair("CoroutinesActivity", CoroutinesActivity::class.java)
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
