@@ -13,33 +13,55 @@ import java.net.ConnectException
  * Description: This is CoroutineExt 支持生命周期自动管理取消协程
  * Project:
  */
-fun uiScope(block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.Main).launch {
-    block()
+typealias CoroutineException= ((java.lang.Exception)->Unit)?
+fun uiScope(handlerException:CoroutineException=null,block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.Main).launch {
+    try {
+        block()
+    } catch (e: Exception) {
+        handlerException?.invoke(e)
+    }
 }
 
-fun ioScope(block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.IO).launch {
-    block()
+fun ioScope(handlerException:CoroutineException=null,block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.IO).launch {
+    try {
+        block()
+    } catch (e: Exception) {
+        handlerException?.invoke(e)
+    }
 }
 
-fun asyncScopeOnUI(block: suspend CoroutineScope.() -> Unit) =
+fun asyncScopeOnUI(handlerException:CoroutineException=null,block: suspend CoroutineScope.() -> Unit) =
     CoroutineScope(Dispatchers.IO).async {
-        block.invoke(this)
+        try {
+            block()
+        } catch (e: Exception) {
+            handlerException?.invoke(e)
+        }
     }
 
-fun uiScope(lifecycleOwner: LifecycleOwner, block: suspend CoroutineScope.() -> Unit) = run {
-    val deferred = uiScope(block)
-    lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
-}
+fun uiScope(lifecycleOwner: LifecycleOwner,handlerException:CoroutineException=null, block: suspend CoroutineScope.() -> Unit) =
+    try {
+        val deferred = uiScope(handlerException,block)
+        lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
+    } catch (e: Exception) {
+        handlerException?.invoke(e)
+    }
 
-fun ioScope(lifecycleOwner: LifecycleOwner, block: suspend CoroutineScope.() -> Unit) = run {
-    val deferred = ioScope(block)
-    lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
-}
+fun ioScope(lifecycleOwner: LifecycleOwner,handlerException:CoroutineException=null, block: suspend CoroutineScope.() -> Unit) =
+    try {
+        val deferred = ioScope(handlerException,block)
+        lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
+    } catch (e: Exception) {
+        handlerException?.invoke(e)
+    }
 
-fun asyncScopeOnUI(lifecycleOwner: LifecycleOwner, block: suspend CoroutineScope.() -> Unit) = run {
-    val deferred = asyncScopeOnUI(block)
-    lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
-}
+fun asyncScopeOnUI(lifecycleOwner: LifecycleOwner,handlerException:CoroutineException=null, block: suspend CoroutineScope.() -> Unit) =
+    try {
+        val deferred = asyncScopeOnUI(handlerException,block)
+        lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
+    } catch (e: Exception) {
+        handlerException?.invoke(e)
+    }
 
 /**
  * 扩展函数,协程实现网路请求
