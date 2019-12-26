@@ -124,6 +124,7 @@ fun saveFile(origin: InputStream, newFile: File,bufferSize: Int=10240, onProgres
     if (newFile.exists()){
         newFile.delete()
     }
+    newFile.parentFile?.mkdirs()
     newFile.createNewFile()
     val mFileOutputStream = FileOutputStream(newFile)
     try {
@@ -156,6 +157,7 @@ fun saveFile(origin: File, newFile: File,bufferSize: Int=10240, onProgress:OnPro
     if (newFile.exists()){
         newFile.delete()
     }
+    newFile.parentFile?.mkdirs()
     newFile.createNewFile()
     val assetInputStream = origin.inputStream()
     val mFileOutputStream = FileOutputStream(newFile)
