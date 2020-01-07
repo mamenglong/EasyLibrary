@@ -1,6 +1,7 @@
 package com.mml.kotlinextension
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -39,7 +40,11 @@ inline fun <reified T : Activity> Activity.startActivity(bundle: Bundle) {
     intent.putExtra("bundle",bundle)
     startActivity(intent)
 }
-
+inline fun <reified T : Activity> Activity.startActivity(bundle: Bundle,options: ActivityOptions) {
+    val intent = Intent(this, T::class.java)
+    intent.putExtra("bundle",bundle)
+    startActivity(intent,options.toBundle())
+}
 /**
  * 屏幕截图
  */
