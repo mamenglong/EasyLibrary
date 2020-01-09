@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Checkable
 import android.widget.TextView
 
 /**
@@ -131,7 +132,26 @@ fun View.view2Bitmap(): Bitmap {
 }
 
 
+
+
 //-----扩展属性-----
+
+// 扩展点击事件属性(重复点击时长)
+var <T : View> T.lastClickTime: Long
+    set(value) = setTag(1766613352, value)
+    get() = getTag(1766613352) as? Long ?: 0
+// 重复点击事件绑定
+inline fun <T : View> T.singleClick(time: Long = 800, crossinline block: (T) -> Unit) {
+    setOnClickListener {
+        val currentTimeMillis = System.currentTimeMillis()
+        if (currentTimeMillis - lastClickTime > time || this is Checkable) {
+            lastClickTime = currentTimeMillis
+            block(this)
+        }
+    }
+}
+
+
 
 var View.bottomMargin: Int
     get():Int {
