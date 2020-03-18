@@ -33,15 +33,16 @@ import kotlin.concurrent.thread
  * @param displayName
  * @param dir
  * @param compressFormat
+ * @return Uri
  */
 fun addBitmapToAlbum(
     context: Context,
     bitmap: Bitmap,
     mimeType: String = "image/*",
-    displayName: String = "IMG${System.currentTimeMillis()}",
+    displayName: String = "IMG${System.currentTimeMillis()}.jpg",
     dir: String? = null,
     compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG
-) {
+):Uri? {
     val values = ContentValues()
     values.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
     values.put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
@@ -57,13 +58,14 @@ fun addBitmapToAlbum(
         )
     }
     val uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-    uri?.let {
+   return  uri?.let {
         val outputStream = context.contentResolver.openOutputStream(it)
         outputStream?.apply {
             bitmap.compress(compressFormat, 100, this)
             close()
            // Toast.makeText(context, "Add bitmap to album succeeded.", Toast.LENGTH_SHORT).show()
         }
+       it
     }
 }
 
