@@ -107,7 +107,7 @@ fun getFileNameByUri(context: Context,uri: Uri): String {
  * @param uri
  * @param fileName
  */
-fun copyUriToExternalFilesDir(context: Context,uri: Uri,dir:String, fileName: String,onSuccess:()->Unit = {}) {
+fun copyUriToExternalFilesDir(context: Context,uri: Uri,dir:String, fileName: String,onSuccess:(String)->Unit = {}) {
     thread {
         val inputStream = context.contentResolver.openInputStream(uri)
         val tempDir = context.getExternalFilesDir(dir)
@@ -132,7 +132,7 @@ fun copyUriToExternalFilesDir(context: Context,uri: Uri,dir:String, fileName: St
             }
             bos.close()
             fos.close()
-            onSuccess.invoke()
+            onSuccess.invoke(file.absolutePath)
            /* context.runOnUiThread {
                 Toast.makeText(context, "Copy file into $tempDir succeeded.", Toast.LENGTH_LONG).show()
             }*/
