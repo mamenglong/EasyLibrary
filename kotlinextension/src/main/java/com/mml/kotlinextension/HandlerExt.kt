@@ -26,18 +26,19 @@ fun delayRun(delayMillis: Long, looper: Looper? = Looper.myLooper(), block: Func
     return handler
 }
 @JvmOverloads
-fun loppRun(interval: Long, looper: Looper? = Looper.myLooper(), block: Runnable){
-    loopRun(interval,looper){block.run()}
+fun loppRun(interval: Long, looper: Looper? = Looper.myLooper(),runFirst:Boolean=true, block: Runnable){
+    loopRun(interval,looper,runFirst){block.run()}
 }
 
 /**
  * 延时循环执行
  * @param interval 间隔时间
  * @param looper 默认值  [Looper.myLooper()]
+ * @param runFirst 先执行在延时执行
  * @param block 循环延时逻辑代码
  * @return [Handler]  可在适当的`地方调用 handler.removeCallbacksAndMessages(null)清空循环延时操作
  */
-fun loopRun(interval:Long,looper: Looper?= Looper.myLooper(),block:Function0<Unit>):Handler{
+fun loopRun(interval:Long,looper: Looper?= Looper.myLooper(),runFirst: Boolean=true,block:Function0<Unit>):Handler{
     var clooper = looper
     if (clooper == null) {
         Looper.prepare()
@@ -50,6 +51,9 @@ fun loopRun(interval:Long,looper: Looper?= Looper.myLooper(),block:Function0<Uni
             handler.postDelayed(this,interval)
         }
     }
-    handler.postDelayed(runnable,interval)
+    if (runFirst)
+        handler.post(runnable)
+    else
+        handler.postDelayed(runnable,interval)
     return handler
 }
