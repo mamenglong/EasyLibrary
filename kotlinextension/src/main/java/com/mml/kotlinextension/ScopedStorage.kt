@@ -4,16 +4,14 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
 import kotlin.concurrent.thread
 
 /**
@@ -82,6 +80,17 @@ fun pickFile(context: FragmentActivity,requestCode:Int,type:String="*/*") {
     intent.type = "*/*"
     context.startActivityForResult(intent, requestCode)
 }
+/**
+ * 打开文件管理器选择文件夹
+ * 在 [onActivityResult] 获取   uri = data.data
+ * @param context
+ * @param requestCode
+ * @param type
+ */
+fun pickFileTree(context: FragmentActivity,requestCode:Int) {
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+    context.startActivityForResult(intent, requestCode)
+}
 
 /**
  * @desc 通过url获取文件名
@@ -100,6 +109,10 @@ fun getFileNameByUri(context: Context,uri: Uri): String {
     return fileName
 }
 
+fun uriToBitmap(context: Context,uri: Uri): Bitmap? {
+    val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+    return BitmapFactory.decodeStream(inputStream)
+}
 
 /**
  * 通过uri复制文件
