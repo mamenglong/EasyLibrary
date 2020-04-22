@@ -87,8 +87,8 @@ object Logger {
         val newMsg = msgFormat(msg, targetStackTraceMSg)
         fun printLog(){
             when (type) {
-                Log.VERBOSE -> Log.v(tag, newMsg)
-                Log.DEBUG -> Log.d(tag, newMsg)
+                Log.VERBOSE -> if (debug) Log.v(tag, newMsg)
+                Log.DEBUG -> if (debug) Log.d(tag, newMsg)
                 Log.INFO -> Log.i(tag, newMsg)
                 Log.WARN -> Log.w(tag, newMsg)
                 Log.ERROR -> Log.e(tag, newMsg)
@@ -108,8 +108,6 @@ object Logger {
             }
         }
         logDisk()
-
-
     }
 
     private fun msgFormat(msg: String, targetStackTraceMSg: String): String {
