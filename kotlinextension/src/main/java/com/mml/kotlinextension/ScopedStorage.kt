@@ -63,7 +63,7 @@ fun pickFile(
      */
     intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    intent.type = "*/*"
+    intent.type = type
     context.startActivityForResult(intent, requestCode)
 }
 
