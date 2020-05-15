@@ -1,9 +1,11 @@
 package com.mml.kotlinextension
 
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.SystemClock
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -204,6 +206,24 @@ var View.leftMargin: Int
         (layoutParams as ViewGroup.MarginLayoutParams).leftMargin = value
     }
 
+/**
+ * 扩展属性 dp转像素
+ */
+val Float.dp
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this,
+        Resources.getSystem().displayMetrics
+    )
+/**
+ * 扩展属性 像素转dp
+ */
+val Float.px
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_PX,
+        this,
+        Resources.getSystem().displayMetrics
+    )
 /**
  * 手动测量摆放View
  * 对于手动 inflate 或者其他方式代码生成加载的View进行测量，避免该View无尺寸
