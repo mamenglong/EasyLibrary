@@ -1,6 +1,7 @@
 package com.mml.retrofitcoroutinedsllibrary
 
 import android.util.Log
+import androidx.core.text.util.LinkifyCompat
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.*
 import java.io.IOException
@@ -13,25 +14,30 @@ import java.net.ConnectException
  * Description: This is CoroutineExt 支持生命周期自动管理取消协程
  * Project:
  */
-typealias CoroutineException= ((java.lang.Exception)->Unit)?
-fun uiScope(handlerException:CoroutineException=null,block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.Main).launch {
-    try {
-        block()
-    } catch (e: Exception) {
-        handlerException?.invoke(e)
+class ScopeResult{
+    private var onSuccess: suspend CoroutineScope.() -> Unit = {}
+    private var onFailure: (java.lang.Exception) -> Unit = {}
+    fun onSuccess(onSuccess: suspend CoroutineScope.() -> Unit) {
+        this.onSuccess = onSuccess
+    }
+
+    fun onFail(onFailure: (java.lang.Exception) -> Unit) {
+        this.onFailure = onFailure
+    }
+
+    suspend fun doSuccess(c:CoroutineScope) {
+        onSuccess(c)
+    }
+
+    fun doFailure(e: Exception) {
+        onFailure(e)
     }
 }
+typealias CoroutineException = ((java.lang.Exception) -> Unit)?
 
-fun ioScope(handlerException:CoroutineException=null,block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.IO).launch {
-    try {
-        block()
-    } catch (e: Exception) {
-        handlerException?.invoke(e)
-    }
-}
-
-fun asyncScopeOnUI(handlerException:CoroutineException=null,block: suspend CoroutineScope.() -> Unit) =
-    CoroutineScope(Dispatchers.IO).async {
+@Deprecated("use uiScope_v2" )
+fun uiScope(handlerException: CoroutineException = null, block: suspend CoroutineScope.() -> Unit) =
+    CoroutineScope(Dispatchers.Main).launch {
         try {
             block()
         } catch (e: Exception) {
@@ -39,30 +45,130 @@ fun asyncScopeOnUI(handlerException:CoroutineException=null,block: suspend Corou
         }
     }
 
-fun uiScope(lifecycleOwner: LifecycleOwner,handlerException:CoroutineException=null, block: suspend CoroutineScope.() -> Unit) =
+fun uiScope_v2(block: ScopeResult.() -> Unit): Job {
+    val ss = ScopeResult().apply(block)
+   return CoroutineScope(Dispatchers.Main).launch {
+        runCatching {
+           ss.doSuccess(this)
+        }.onFailure {
+            ss.doFailure(it as Exception)
+        }
+    }
+}
+@Deprecated("use uiScope_v2" )
+fun ioScope(handlerException: CoroutineException = null, block: suspend CoroutineScope.() -> Unit) =
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            block()
+        } catch (e: Exception) {
+            handlerException?.invoke(e)
+        }
+    }
+fun ioScope_v2(block: ScopeResult.() -> Unit) =
+    CoroutineScope(Dispatchers.IO).launch {
+        val ss = ScopeResult().apply(block)
+        runCatching {
+            ss.doSuccess(this)
+        }.onFailure {
+            ss.doFailure(it as Exception)
+        }
+    }
+@Deprecated("use asyncScopeOnUI_v2" )
+fun asyncScopeOnUI(
+    handlerException: CoroutineException = null,
+    block: suspend CoroutineScope.() -> Unit
+) =
+    CoroutineScope(Dispatchers.IO).async {
+        try {
+            block()
+        } catch (e: Exception) {
+            handlerException?.invoke(e)
+        }
+    }
+fun asyncScopeOnUI_v2(
+    block: ScopeResult.() -> Unit
+) =
+    CoroutineScope(Dispatchers.IO).async {
+        val ss = ScopeResult().apply(block)
+        runCatching {
+            ss.doSuccess(this)
+        }.onFailure {
+            ss.doFailure(it as Exception)
+        }
+    }
+@Deprecated("use uiScope_v2" )
+fun uiScope(
+    lifecycleOwner: LifecycleOwner,
+    handlerException: CoroutineException = null,
+    block: suspend CoroutineScope.() -> Unit
+) =
     try {
-        val deferred = uiScope(handlerException,block)
+        val deferred = uiScope(handlerException, block)
         lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
     } catch (e: Exception) {
         handlerException?.invoke(e)
     }
 
-fun ioScope(lifecycleOwner: LifecycleOwner,handlerException:CoroutineException=null, block: suspend CoroutineScope.() -> Unit) =
+fun uiScope_v2(
+    lifecycleOwner: LifecycleOwner,
+    block: ScopeResult.() -> Unit
+):Unit = run {
+    val ss = ScopeResult().apply(block)
+    runCatching {
+        val deferred = uiScope_v2(block)
+        lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
+    }.onFailure {
+        ss.doFailure(it as Exception)
+    }
+}
+@Deprecated("use ioScope_v2" )
+fun ioScope(
+    lifecycleOwner: LifecycleOwner,
+    handlerException: CoroutineException = null,
+    block: suspend CoroutineScope.() -> Unit
+) =
     try {
-        val deferred = ioScope(handlerException,block)
+        val deferred = ioScope(handlerException, block)
         lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
     } catch (e: Exception) {
         handlerException?.invoke(e)
     }
-
-fun asyncScopeOnUI(lifecycleOwner: LifecycleOwner,handlerException:CoroutineException=null, block: suspend CoroutineScope.() -> Unit) =
+fun ioScope_v2(
+    lifecycleOwner: LifecycleOwner,
+    block: ScopeResult.() -> Unit
+):Unit = run {
+    val ss = ScopeResult().apply(block)
+    runCatching {
+        val deferred = ioScope_v2(block)
+        lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
+    }.onFailure {
+        ss.doFailure(it as Exception)
+    }
+}
+@Deprecated("use asyncScopeOnUI_v2" )
+fun asyncScopeOnUI(
+    lifecycleOwner: LifecycleOwner,
+    handlerException: CoroutineException = null,
+    block: suspend CoroutineScope.() -> Unit
+) =
     try {
-        val deferred = asyncScopeOnUI(handlerException,block)
+        val deferred = asyncScopeOnUI(handlerException, block)
         lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
     } catch (e: Exception) {
         handlerException?.invoke(e)
     }
-
+fun asyncScopeOnUI_v2(
+    lifecycleOwner: LifecycleOwner,
+    block: ScopeResult.() -> Unit
+):Unit = run {
+    val ss = ScopeResult().apply(block)
+    runCatching {
+        val deferred = asyncScopeOnUI_v2(block)
+        lifecycleOwner.lifecycle.addObserver(LifecycleCoroutineListener(deferred))
+    }.onFailure {
+        ss.doFailure(it as Exception)
+    }
+}
 /**
  * 扩展函数,协程实现网路请求
  * @param dsl [是带接收者的函数字面量]
