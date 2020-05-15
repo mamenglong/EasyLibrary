@@ -3,6 +3,7 @@ package com.mml.kotlinextension
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -151,6 +152,22 @@ inline fun <T : View> T.singleClick(time: Long = 800, crossinline block: (T) -> 
     }
 }
 
+/**
+ * 多次点击事件
+ */
+fun View.multiClickListener(times:Int,action:()->Unit){
+    val mHints = LongArray(times) //初始全部为0
+    setOnClickListener {
+        //将mHints数组内的所有元素左移一个位置
+        System.arraycopy(mHints, 1, mHints, 0, mHints.size - 1)
+        //获得当前系统已经启动的时间
+        mHints[mHints.size - 1] = SystemClock.uptimeMillis()
+        if (mHints[0] >= (mHints[mHints.size - 1] - 800)) {
+            action()
+        }
+    }
+}
+
 
 
 var View.bottomMargin: Int
@@ -186,3 +203,21 @@ var View.leftMargin: Int
     set(value) {
         (layoutParams as ViewGroup.MarginLayoutParams).leftMargin = value
     }
+
+/**
+ * 手动测量摆放View
+ * 对于手动 inflate 或者其他方式代码生成加载的View进行测量，避免该View无尺寸
+ * PS: 在填充数据以后调用，否则数据无法正常显示
+ */
+fun layoutView(v: View, width: Int, height: Int) {
+    // validate view.width and view.height
+    v.layout(0, 0, width, height)
+    val measuredWidth =
+        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY)
+    val measuredHeight =
+        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+
+    // validate view.measurewidth and view.measureheight
+    v.measure(measuredWidth, measuredHeight)
+    v.layout(0, 0, v.measuredWidth, v.measuredHeight)
+}

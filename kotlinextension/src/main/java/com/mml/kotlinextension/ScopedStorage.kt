@@ -11,6 +11,7 @@ import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import java.io.*
 import kotlin.concurrent.thread
@@ -32,6 +33,7 @@ private const val READ_REQUEST_CODE: Int = 0x02
 private const val READ_TREE_REQUEST_CODE: Int = 0x03
 private const val READ_MULTIPLE_REQUEST_CODE: Int = 0x03
 private const val EDIT_REQUEST_CODE: Int = 0x04
+
 /**
  * 打开文件管理器选择文件,需要读写权限
  * 在 [onActivityResult] 获取   uri = data.data
@@ -66,22 +68,78 @@ fun pickFile(
     intent.type = type
     context.startActivityForResult(intent, requestCode)
 }
-
+fun pickFile(
+    context: Fragment,
+    requestCode: Int = READ_REQUEST_CODE,
+    type: String = "*/*",
+    isMultiple: Boolean = false
+) {
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+    // Filter to only show results that can be "opened", such as a
+    // file (as opposed to a list of contacts or timezones)
+    intent.addCategory(Intent.CATEGORY_OPENABLE)
+    if (isMultiple) {
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+    }
+    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+    /**
+     *    获取永久权限。onActivityResult需调用如下进行确认
+     *    参考 https://developer.android.com/guide/topics/providers/document-provider?hl=zh-cn#kotlin
+     *  val takeFlags: Int = intent.flags and
+    (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+    // Check for the freshest data.
+    contentResolver.takePersistableUriPermission(uri, takeFlags)
+     */
+    intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    intent.type = type
+    context.startActivityForResult(intent, requestCode)
+}
 /**
  * 选择多文件
  */
-fun pickMultipleFiles(context: FragmentActivity, requestCode: Int=READ_MULTIPLE_REQUEST_CODE, type: String = "*/*") {
+fun pickMultipleFiles(
+    context: FragmentActivity,
+    requestCode: Int = READ_MULTIPLE_REQUEST_CODE,
+    type: String = "*/*"
+) {
+    pickFile(context, requestCode, type, true)
+}
+fun pickMultipleFiles(
+    context: Fragment,
+    requestCode: Int = READ_MULTIPLE_REQUEST_CODE,
+    type: String = "*/*"
+) {
     pickFile(context, requestCode, type, true)
 }
 
 /**
  * 从图库选择图片 使用  ACTION_PICK
  */
-fun pickImageFromGallery(context: FragmentActivity, requestCode: Int=READ_MULTIPLE_REQUEST_CODE,isMultiple: Boolean = false){
+fun pickImageFromGallery(
+    context: FragmentActivity,
+    requestCode: Int = READ_MULTIPLE_REQUEST_CODE,
+    isMultiple: Boolean = false
+) {
     val intent = Intent(
         Intent.ACTION_PICK
     )
-    intent.data= MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    if (isMultiple) {
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+    }
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    context.startActivityForResult(intent, requestCode)
+}
+fun pickImageFromGallery(
+    context: Fragment,
+    requestCode: Int = READ_MULTIPLE_REQUEST_CODE,
+    isMultiple: Boolean = false
+) {
+    val intent = Intent(
+        Intent.ACTION_PICK
+    )
+    intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
     if (isMultiple) {
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
     }
@@ -95,7 +153,13 @@ fun pickImageFromGallery(context: FragmentActivity, requestCode: Int=READ_MULTIP
  * @param requestCode
  * @param type
  */
-fun pickFileTree(context: FragmentActivity, requestCode: Int= READ_TREE_REQUEST_CODE) {
+fun pickFileTree(context: FragmentActivity, requestCode: Int = READ_TREE_REQUEST_CODE) {
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+    intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    context.startActivityForResult(intent, requestCode)
+}
+fun pickFileTree(context: Fragment, requestCode: Int = READ_TREE_REQUEST_CODE) {
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
     intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -108,8 +172,30 @@ fun pickFileTree(context: FragmentActivity, requestCode: Int= READ_TREE_REQUEST_
 //
 // createFile("text/plain", "foobar.txt");
 // createFile("image/png", "mypicture.png");
-*/
-private fun createFile(context: FragmentActivity,mimeType: String, fileName: String,requestCode: Int= WRITE_REQUEST_CODE) {
+ */
+fun createFile(
+    context: FragmentActivity,
+    mimeType: String,
+    fileName: String,
+    requestCode: Int = WRITE_REQUEST_CODE
+) {
+    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+        // Filter to only show results that can be "opened", such as
+        // a file (as opposed to a list of contacts or timezones).
+        addCategory(Intent.CATEGORY_OPENABLE)
+
+        // Create a file with the requested MIME type.
+        type = mimeType
+        putExtra(Intent.EXTRA_TITLE, fileName)
+    }
+    context.startActivityForResult(intent, requestCode)
+}
+fun createFile(
+    context: Fragment,
+    mimeType: String,
+    fileName: String,
+    requestCode: Int = WRITE_REQUEST_CODE
+) {
     val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
         // Filter to only show results that can be "opened", such as
         // a file (as opposed to a list of contacts or timezones).
@@ -125,7 +211,7 @@ private fun createFile(context: FragmentActivity,mimeType: String, fileName: Str
  * Open a file for writing and append some text to it.
  * https://developer.android.com/guide/topics/providers/document-provider?hl=zh-cn#edit
  */
-private fun editDocumentFile(context: FragmentActivity,requestCode: Int= EDIT_REQUEST_CODE) {
+fun editDocumentFile(context: FragmentActivity, requestCode: Int = EDIT_REQUEST_CODE) {
     // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's
     // file browser.
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -139,6 +225,21 @@ private fun editDocumentFile(context: FragmentActivity,requestCode: Int= EDIT_RE
 
     context.startActivityForResult(intent, requestCode)
 }
+fun editDocumentFile(context: Fragment, requestCode: Int = EDIT_REQUEST_CODE) {
+    // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's
+    // file browser.
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+        // Filter to only show results that can be "opened", such as a
+        // file (as opposed to a list of contacts or timezones).
+        addCategory(Intent.CATEGORY_OPENABLE)
+
+        // Filter to show only text files.
+        type = "text/plain"
+    }
+
+    context.startActivityForResult(intent, requestCode)
+}
+
 /**
  * 添加图片到图库,适配android p 分区存储
  * @param context
@@ -214,7 +315,7 @@ fun uriToBitmap(context: Context, uri: Uri): Bitmap? {
  * 请注意，您不应在界面线程上执行此操作。请使用 AsyncTask 在后台执行此操作。打开位图后，您可以在 ImageView 中显示该位图。
  */
 @Throws(IOException::class)
-private fun getBitmapFromUri(context: Context, uri: Uri): Bitmap? {
+fun getBitmapFromUri(context: Context, uri: Uri): Bitmap? {
     val parcelFileDescriptor: ParcelFileDescriptor? =
         context.contentResolver.openFileDescriptor(uri, "r")
     val fileDescriptor: FileDescriptor? = parcelFileDescriptor?.fileDescriptor
@@ -227,7 +328,7 @@ private fun getBitmapFromUri(context: Context, uri: Uri): Bitmap? {
  * 从 uri 读取数据
  */
 @Throws(IOException::class)
-private fun readTextFromUri(context: Context, uri: Uri): String {
+fun readTextFromUri(context: Context, uri: Uri): String {
     val stringBuilder = StringBuilder()
     context.contentResolver.openInputStream(uri)?.use { inputStream ->
         BufferedReader(InputStreamReader(inputStream)).use { reader ->
