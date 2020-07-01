@@ -1,5 +1,6 @@
 package com.mml.kotlinextension
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Checkable
 import android.widget.TextView
+import androidx.annotation.Dimension
 
 /**
  * Author: Menglong Ma
@@ -206,8 +208,18 @@ var View.leftMargin: Int
         (layoutParams as ViewGroup.MarginLayoutParams).leftMargin = value
     }
 
+fun View.dpToPx(
+    @Dimension(unit = Dimension.DP) dp: Float
+): Float {
+    val r = context.resources
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dp,
+        r.displayMetrics
+    )
+}
 /**
- * 扩展属性 dp转像素
+ * 扩展属性 dp转px
  */
 val Float.dp
     get() = TypedValue.applyDimension(
@@ -216,11 +228,20 @@ val Float.dp
         Resources.getSystem().displayMetrics
     )
 /**
- * 扩展属性 像素转dp
+ * 扩展属性 像素
  */
 val Float.px
     get() = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_PX,
+        this,
+        Resources.getSystem().displayMetrics
+    )
+/**
+ * 扩展属性 sp转px
+ */
+val Float.sp
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
         this,
         Resources.getSystem().displayMetrics
     )
