@@ -386,3 +386,55 @@ fun copyUriToExternalFilesDir(
         }
     }
 }
+
+fun saveFileToPublicDir(context:Context,file:File,mimeType:String="*/*",dir:String?=context.packageName,insertDir:String = Environment.DIRECTORY_DOWNLOADS) {
+    val contentValues = ContentValues()
+    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME,file.name)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        contentValues.put(MediaStore.MediaColumns.DATE_TAKEN, System.currentTimeMillis())
+    }
+    contentValues.put(MediaStore.MediaColumns.MIME_TYPE,mimeType)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        contentValues.put(
+            MediaStore.MediaColumns.RELATIVE_PATH,
+            dir?.let { "$insertDir/$dir" } ?: insertDir
+        )
+    } else {
+        contentValues.put(
+            MediaStore.MediaColumns.DATA,
+            "${Environment.getExternalStorageDirectory().path}/${insertDir}${dir?.let { "/$dir" } ?: ""}/${file.name}"
+        )
+    }
+    val uri:Uri?=
+        when(insertDir){
+            Environment.DIRECTORY_DCIM, Environment.DIRECTORY_PICTURES ->{
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE,"image/*")
+                context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            }
+            Environment.DIRECTORY_MOVIES ->{
+                context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
+            }
+            Environment.DIRECTORY_DOWNLOADS ->{
+                context.getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+            }
+            Environment.DIRECTORY_DOCUMENTS ->{
+                context.getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+            }
+            Environment.DIRECTORY_MUSIC ->{
+                context.getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, contentValues)
+            }
+            else->{
+                null
+            }
+        }
+    uri?.let {
+        context.contentResolver.openOutputStream(it)?.use {out->
+            file.inputStream().bufferedReader().useLines {lines->
+                lines.forEach {line->
+                    out.bufferedWriter().write(line)
+                }
+            }
+            out.flush()
+        }
+    }
+}
