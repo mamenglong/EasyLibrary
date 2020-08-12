@@ -20,8 +20,8 @@ import android.widget.Toast
  * Package: com.mml.kotlinextension
  * Project: EasyLibrary
  */
-fun Context.showDebugToast(msg:String){
-    if (BuildConfig.DEBUG)
+fun Context.showDebugToast(msg:String,debug:Boolean =true){
+    if (debug)
         Toast.makeText(this,msg, Toast.LENGTH_SHORT).show()
 }
 fun Context.showToast(msg:String){

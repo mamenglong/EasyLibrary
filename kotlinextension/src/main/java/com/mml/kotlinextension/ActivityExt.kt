@@ -2,14 +2,12 @@ package com.mml.kotlinextension
 
 import android.app.Activity
 import android.app.ActivityOptions
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -24,9 +22,10 @@ import android.widget.Toast
  * Project: EasyLibrary
  */
 
-fun Activity.showDebugToast(msg:String){
-    if (BuildConfig.DEBUG)
-        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
+fun Activity.showDebugToast(msg:String,debug:Boolean = true){
+    if (debug) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
 }
 fun Activity.showToast(msg:String){
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()

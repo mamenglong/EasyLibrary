@@ -1,0 +1,3 @@
+apply from:"../library.gradle"
+//group='com.github.mamenglong'
+project.archivesBaseName ='scopedStorage'
