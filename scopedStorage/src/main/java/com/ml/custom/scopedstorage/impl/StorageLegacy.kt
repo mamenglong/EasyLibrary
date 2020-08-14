@@ -17,7 +17,7 @@ object StorageLegacy: IFile {
     override fun <T : BaseRequest> createFile(
         context: Context,
         baseRequest: T,
-        fileResponse: FileResponse
+        block:FileResponse.()->Unit
     ) {
         TODO("Not yet implemented")
     }
@@ -26,7 +26,7 @@ object StorageLegacy: IFile {
         context: Context,
         where: T,
         baseRequest: T,
-        fileResponse: FileResponse
+        block:FileResponse.()->Unit
     ) {
         TODO("Not yet implemented")
     }
@@ -34,7 +34,7 @@ object StorageLegacy: IFile {
     override fun <T : BaseRequest> copyFile(
         context: Context,
         baseRequest: T,
-        fileResponse: FileResponse
+        block:FileResponse.()->Unit
     ) {
         TODO("Not yet implemented")
     }
@@ -42,7 +42,7 @@ object StorageLegacy: IFile {
     override fun <T : BaseRequest> deleteFile(
         context: Context,
         baseRequest: T,
-        fileResponse: FileResponse
+        block:FileResponse.()->Unit
     ) {
         TODO("Not yet implemented")
     }
@@ -50,7 +50,7 @@ object StorageLegacy: IFile {
     override fun <T : BaseRequest> queryFile(
         context: Context,
         baseRequest: T,
-        fileResponse: FileResponse
+        block:FileResponse.()->Unit
     ) {
         TODO("Not yet implemented")
     }

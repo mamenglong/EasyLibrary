@@ -3,17 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mml.easylibrary">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:networkSecurityConfig="@xml/network_config"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".coroutines.CoroutinesActivity"></activity>
+        <activity android:name=".StorageActivity"></activity>
+        <activity android:name=".coroutines.CoroutinesActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -11,9 +11,9 @@ import android.content.Context
  * Project: EasyLibrary
  */
 interface IFile {
-    fun<T:BaseRequest> createFile(context: Context,baseRequest: T,fileResponse: FileResponse)
-    fun<T:BaseRequest> renameFileTo(context: Context,where: T,baseRequest: T,fileResponse: FileResponse)
-    fun<T:BaseRequest> copyFile(context: Context,baseRequest: T,fileResponse: FileResponse)
-    fun<T:BaseRequest> deleteFile(context: Context,baseRequest: T,fileResponse: FileResponse)
-    fun<T:BaseRequest> queryFile(context: Context,baseRequest: T,fileResponse: FileResponse)
+    fun<T:BaseRequest> createFile(context: Context,baseRequest: T,block: FileResponse.()->Unit)
+    fun<T:BaseRequest> renameFileTo(context: Context, sourceRequest: T, targetRequest: T, block:  FileResponse.()->Unit)
+    fun<T:BaseRequest> copyFile(context: Context,baseRequest: T,block:  FileResponse.()->Unit)
+    fun<T:BaseRequest> deleteFile(context: Context,baseRequest: T,block:  FileResponse.()->Unit)
+    fun<T:BaseRequest> queryFile(context: Context,baseRequest: T,block:  FileResponse.()->Unit)
 }

@@ -1,5 +1,6 @@
 package com.mml.easylibrary
 
+import android.Manifest
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,6 +10,7 @@ import com.mml.easyconfig.config.SharedPreferenceDelegate
 import com.mml.easydialog.dialog.*
 import com.mml.easylibrary.coroutines.CoroutinesActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import java.security.Permission
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,13 +18,15 @@ class MainActivity : AppCompatActivity() {
     var ss by SharedPreferenceDelegate.json<User?>(null,"asad")
 
     private val map = mutableMapOf<String,Class<*>>(
-        Pair("CoroutinesActivity", CoroutinesActivity::class.java)
+        Pair("CoroutinesActivity", CoroutinesActivity::class.java),
+        Pair("存储", StorageActivity::class.java)
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         AndroidConfig.initialize(this)
         initView()
+        requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE),0)
     }
 
     private fun initView() {

@@ -1,5 +1,6 @@
 package com.ml.custom.scopedstorage
 
+import android.os.Environment
 import android.provider.MediaStore
 import java.io.File
 
@@ -12,10 +13,13 @@ import java.io.File
  * Project: EasyLibrary
  */
 
-open class BaseRequest{
-    lateinit var file:File
+open class BaseRequest(val file:File = File("")){
 
-    @ContentValue(MediaStore.MediaColumns.MIME_TYPE)
-    lateinit var type:String
+    /**
+     * must one of Standard directory
+     * @see Environment
+     */
+    var dirType:String = Environment.DIRECTORY_DOWNLOADS
+    var id:String = ""
 
 }
