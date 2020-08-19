@@ -1,5 +1,6 @@
 package com.ml.custom.scopedstorage.impl
 
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
@@ -194,8 +195,7 @@ object StorageScoped : IFile {
         val cursor =
             context.contentResolver.query(dirUri, projection, null, null, null)
         return cursor?.let {
-            it.moveToFirst()
-            if (it.moveToNext()) {
+            if (it.moveToFirst()) {
                 val id = it.getString(it.getColumnIndex(MediaStore.MediaColumns._ID))
                 val name = it.getString(1)
                 val path = it.getString(2)

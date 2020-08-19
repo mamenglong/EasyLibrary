@@ -38,7 +38,7 @@ class FileRequest(file: File=File("")) : BaseRequest(file) {
     var displayName: String = file.name
 
     @ContentValue(MediaStore.MediaColumns.RELATIVE_PATH)
-    var path: String = file.path.substringBeforeLast(".")
+    var path: String = file.absolutePath.substringBeforeLast("/").replaceFirst("/","")
     get()= "$dirType/$field"
     @ContentValue(MediaStore.MediaColumns.TITLE)
     var title :String = file.nameWithoutExtension

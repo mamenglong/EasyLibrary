@@ -12,10 +12,11 @@ import java.io.FileWriter
 import java.io.OutputStreamWriter
 
 class StorageActivity : AppCompatActivity() {
-    val file = File("dd","ii.txt")
+    lateinit var file:File
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_storage)
+        file =File(packageName,"ii.txt")
     }
 
     fun create(view: View) {
@@ -34,8 +35,11 @@ class StorageActivity : AppCompatActivity() {
                /*  contentResolver.openFileDescriptor(uri!!,"w")?.use {
                      it.fileDescriptor.sync()
                 }*/
-                contentResolver.openOutputStream(uri!!)?.use {
-                    it.write(text.toByteArray())
+                contentResolver.openOutputStream(uri!!)?.use {outputStream->
+                    text.byteInputStream().use {
+                        it.copyTo(outputStream)
+                    }
+                   // it.write(text.toByteArray())
                 }
                 com.mml.core.showToast("创建成功： $uri")
             }
@@ -47,7 +51,19 @@ class StorageActivity : AppCompatActivity() {
         //saveFileToPublicDir(this,File("hahha","ii1.txt"))
     }
     fun rename(view: View) {
-
+        val sourceFileRequest= FileRequest(file)
+        sourceFileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
+        val dstFileRequest= FileRequest(File("haha.txt"))
+        dstFileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
+        val fileAccessFactory  = FileAccessFactory.getFile()
+        fileAccessFactory.renameFileTo(this,sourceFileRequest,dstFileRequest){
+            onSuccess{uri, file ->
+                com.mml.core.showToast("成功$uri")
+            }
+            onFailure {
+                com.mml.core.showToast("失败$it")
+            }
+        }
     }
     fun delete(view: View) {
         val fileRequest= FileRequest(file)
