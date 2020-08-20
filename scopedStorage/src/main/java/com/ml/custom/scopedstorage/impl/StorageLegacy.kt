@@ -2,6 +2,7 @@ package com.ml.custom.scopedstorage.impl
 
 import android.content.Context
 import com.ml.custom.scopedstorage.BaseRequest
+import com.ml.custom.scopedstorage.FileRequest
 import com.ml.custom.scopedstorage.FileResponse
 import com.ml.custom.scopedstorage.IFile
 
@@ -19,7 +20,9 @@ object StorageLegacy: IFile {
         baseRequest: T,
         block:FileResponse.()->Unit
     ) {
-        TODO("Not yet implemented")
+        baseRequest as FileRequest
+        val file = baseRequest.file
+        val path = baseRequest.path
     }
 
     override fun <T : BaseRequest> renameFileTo(
@@ -28,12 +31,13 @@ object StorageLegacy: IFile {
         baseRequest: T,
         block:FileResponse.()->Unit
     ) {
-        TODO("Not yet implemented")
+        
     }
 
     override fun <T : BaseRequest> copyFile(
         context: Context,
-        baseRequest: T,
+        sourceRequest: T,
+        targetRequest: T,
         block:FileResponse.()->Unit
     ) {
         TODO("Not yet implemented")

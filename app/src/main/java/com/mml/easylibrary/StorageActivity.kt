@@ -53,7 +53,8 @@ class StorageActivity : AppCompatActivity() {
     fun rename(view: View) {
         val sourceFileRequest= FileRequest(file)
         sourceFileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
-        val dstFileRequest= FileRequest(File("haha.txt"))
+        val dstFileRequest= FileRequest(sourceFileRequest.file)
+        dstFileRequest.displayName = "hahha.txt"
         dstFileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
         val fileAccessFactory  = FileAccessFactory.getFile()
         fileAccessFactory.renameFileTo(this,sourceFileRequest,dstFileRequest){
@@ -79,6 +80,19 @@ class StorageActivity : AppCompatActivity() {
         }
     }
     fun copy(view: View) {
+        val fileRequest= FileRequest(file)
+        fileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
+        val dstFileRequest= FileRequest(File("haha1.txt"))
+        dstFileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
+        val fileAccessFactory  = FileAccessFactory.getFile()
+        fileAccessFactory.copyFile(this,fileRequest,dstFileRequest){
+            onSuccess { uri, _ ->
+                com.mml.core.showToast("成功：$uri")
 
+            }
+            onFailure {
+                com.mml.core.showToast("失败$it")
+            }
+        }
     }
 }

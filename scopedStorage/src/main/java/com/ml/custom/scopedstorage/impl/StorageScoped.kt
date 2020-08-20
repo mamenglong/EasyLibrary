@@ -1,12 +1,12 @@
 package com.ml.custom.scopedstorage.impl
 
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.net.toFile
 import com.ml.custom.scopedstorage.*
 
 /**
@@ -97,15 +97,15 @@ object StorageScoped : IFile {
         block: FileResponse.() -> Unit
     ) {
         val fileResponse = fileResponse(block)
-        val uri = query(context,sourceRequest)
+        val uri = query(context, sourceRequest)
         uri?: kotlin.run {
             fileResponse.onFailure(java.lang.Exception("sourceRequest uri is null"))
             return
         }
         val contentValues = fileRequestConvertContentValues(targetRequest)
-        val result=context.contentResolver.update(uri,contentValues,null,null)
+        val result=context.contentResolver.update(uri, contentValues, null, null)
         if (result>0){
-            fileResponse.onSuccess(uri,null)
+            fileResponse.onSuccess(uri, null)
         }else{
             fileResponse.onFailure(java.lang.Exception("fail"))
         }
@@ -113,10 +113,43 @@ object StorageScoped : IFile {
 
     override fun <T : BaseRequest> copyFile(
         context: Context,
-        baseRequest: T,
+        sourceRequest: T,
+        targetRequest: T,
         block: FileResponse.() -> Unit
     ) {
-        TODO("Not yet implemented")
+        val fileResponse = fileResponse(block)
+        val uri = query(context, sourceRequest)
+        val dstUri = uriExternalMap[targetRequest.dirType]
+        uri?: kotlin.run {
+            fileResponse.onFailure(java.lang.Exception("sourceRequest uri is null"))
+            return
+        }
+        dstUri?: kotlin.run {
+            fileResponse.onFailure(java.lang.Exception("targetRequest uri is null"))
+            return
+        }
+        val contentValues = fileRequestConvertContentValues(targetRequest)
+        kotlin.runCatching {
+            val result=context.contentResolver.insert(dstUri, contentValues)
+            var size = 0L
+            result?.let { resultUri->
+                uri.toFile().inputStream().use { inputStream->
+                    resultUri.toFile().outputStream().use {
+                        size=inputStream.copyTo(it)
+                    }
+                }
+            }
+            Pair(size, result)
+        }.onSuccess {
+            if (it.first>0){
+                fileResponse.onSuccess(it.second, null)
+            }else{
+                fileResponse.onFailure(Exception("copy fail ."))
+            }
+        }.onFailure {
+            fileResponse.onFailure(Exception(it))
+        }
+
     }
 
     override fun <T : BaseRequest> deleteFile(
@@ -125,14 +158,14 @@ object StorageScoped : IFile {
         block: FileResponse.() -> Unit
     ) {
         val fileResponse = fileResponse(block)
-        val uri = query(context,baseRequest)
+        val uri = query(context, baseRequest)
         uri?: kotlin.run {
             fileResponse.onFailure(java.lang.Exception("file uri is null"))
             return
         }
-        val result= context.contentResolver.delete(uri,null,null)
+        val result= context.contentResolver.delete(uri, null, null)
         if (result>0){
-            fileResponse.onSuccess(uri,null)
+            fileResponse.onSuccess(uri, null)
         }else{
             fileResponse.onFailure(Exception("fail to delete"))
         }
@@ -187,13 +220,14 @@ object StorageScoped : IFile {
         val projection =
             arrayOf<String>(
                 MediaStore.MediaColumns._ID,
-            MediaStore.MediaColumns.DISPLAY_NAME,
-                MediaStore.MediaColumns.RELATIVE_PATH)
-        val selection:String? = "${MediaStore.MediaColumns.DISPLAY_NAME} = ${where.file.name}"
-        val selectionArgs = arrayOf<String>()
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                MediaStore.MediaColumns.RELATIVE_PATH
+            )
+        val selection:String? = "${MediaStore.MediaColumns.DISPLAY_NAME} =?"
+        val selectionArgs = arrayOf<String>(where.file.name)
 
         val cursor =
-            context.contentResolver.query(dirUri, projection, null, null, null)
+            context.contentResolver.query(dirUri, projection, selection, selectionArgs, null)
         return cursor?.let {
             if (it.moveToFirst()) {
                 val id = it.getString(it.getColumnIndex(MediaStore.MediaColumns._ID))
@@ -209,7 +243,7 @@ object StorageScoped : IFile {
         }
 
     }
-    private fun log(msg:String){
-        Log.i("Storage",msg)
+    private fun log(msg: String){
+        Log.i("Storage", msg)
     }
 }
