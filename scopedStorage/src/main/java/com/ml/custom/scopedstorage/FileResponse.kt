@@ -14,16 +14,24 @@ import java.io.File
 
 fun fileResponse(block:FileResponse.()->Unit) = FileResponse().also(block)
 class FileResponse {
-    private var onSuccess:(Uri?, File?)->Unit={_,_->}
+    private var onScopedSuccess:(Uri?)->Unit={_->}
+    private var onLegacySuccess:(File?)->Unit={_->}
+
     private var onFailure:(Exception)->Unit={}
-    fun onSuccess(block:(Uri?, File?)->Unit){
-        onSuccess = block
+    fun onScopedSuccess(block:(Uri?)->Unit){
+        onScopedSuccess = block
+    }
+    fun onLegacySuccess(block:(File?)->Unit){
+        onLegacySuccess = block
     }
     fun onFailure(block: (Exception) -> Unit) {
         onFailure = block
     }
-    fun onSuccess(uri:Uri?,file: File?){
-        onSuccess.invoke(uri,file)
+    fun onScopedSuccess(any: Uri?){
+        onScopedSuccess.invoke(any)
+    }
+    fun onLegacySuccess(file: File?){
+        onLegacySuccess.invoke(file)
     }
     fun onFailure(exception:Exception) {
         onFailure.invoke(exception)

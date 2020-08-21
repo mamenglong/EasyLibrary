@@ -6,8 +6,8 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import androidx.core.net.toFile
 import com.ml.custom.scopedstorage.*
+import java.io.FileNotFoundException
 
 /**
  * Author: Menglong Ma
@@ -80,7 +80,7 @@ object StorageScoped : IFile {
             onSuccess = {
                 log("${it.toString()}")
                 it?.let {
-                    fileResponse.onSuccess(it, null)
+                    fileResponse.onScopedSuccess(it)
                 } ?: kotlin.run {
                     fileResponse.onFailure(Exception("unknow exception"))
                 }
@@ -99,13 +99,13 @@ object StorageScoped : IFile {
         val fileResponse = fileResponse(block)
         val uri = query(context, sourceRequest)
         uri?: kotlin.run {
-            fileResponse.onFailure(java.lang.Exception("sourceRequest uri is null"))
+            fileResponse.onFailure(FileNotFoundException("sourceRequest uri is null"))
             return
         }
         val contentValues = fileRequestConvertContentValues(targetRequest)
         val result=context.contentResolver.update(uri, contentValues, null, null)
         if (result>0){
-            fileResponse.onSuccess(uri, null)
+            fileResponse.onScopedSuccess(uri)
         }else{
             fileResponse.onFailure(java.lang.Exception("fail"))
         }
@@ -121,11 +121,11 @@ object StorageScoped : IFile {
         val uri = query(context, sourceRequest)
         val dstUri = uriExternalMap[targetRequest.dirType]
         uri?: kotlin.run {
-            fileResponse.onFailure(java.lang.Exception("sourceRequest uri is null"))
+            fileResponse.onFailure(FileNotFoundException("sourceRequest uri is null"))
             return
         }
         dstUri?: kotlin.run {
-            fileResponse.onFailure(java.lang.Exception("targetRequest uri is null"))
+            fileResponse.onFailure(FileNotFoundException("targetRequest uri is null"))
             return
         }
         val contentValues = fileRequestConvertContentValues(targetRequest)
@@ -133,8 +133,8 @@ object StorageScoped : IFile {
             val result=context.contentResolver.insert(dstUri, contentValues)
             var size = 0L
             result?.let { resultUri->
-                uri.toFile().inputStream().use { inputStream->
-                    resultUri.toFile().outputStream().use {
+                context.contentResolver.openInputStream(uri)?.use { inputStream->
+                    context.contentResolver.openOutputStream(resultUri)?.use {
                         size=inputStream.copyTo(it)
                     }
                 }
@@ -142,7 +142,7 @@ object StorageScoped : IFile {
             Pair(size, result)
         }.onSuccess {
             if (it.first>0){
-                fileResponse.onSuccess(it.second, null)
+                fileResponse.onScopedSuccess(it.second)
             }else{
                 fileResponse.onFailure(Exception("copy fail ."))
             }
@@ -160,12 +160,12 @@ object StorageScoped : IFile {
         val fileResponse = fileResponse(block)
         val uri = query(context, baseRequest)
         uri?: kotlin.run {
-            fileResponse.onFailure(java.lang.Exception("file uri is null"))
+            fileResponse.onFailure(FileNotFoundException("file uri is null"))
             return
         }
         val result= context.contentResolver.delete(uri, null, null)
         if (result>0){
-            fileResponse.onSuccess(uri, null)
+            fileResponse.onScopedSuccess(uri)
         }else{
             fileResponse.onFailure(Exception("fail to delete"))
         }

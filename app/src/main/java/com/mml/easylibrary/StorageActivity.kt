@@ -1,15 +1,13 @@
 package com.mml.easylibrary
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
 import com.ml.custom.scopedstorage.FileAccessFactory
 import com.ml.custom.scopedstorage.FileRequest
-import com.mml.kotlinextension.saveFileToPublicDir
 import java.io.File
-import java.io.FileWriter
-import java.io.OutputStreamWriter
 
 class StorageActivity : AppCompatActivity() {
     lateinit var file:File
@@ -25,23 +23,27 @@ class StorageActivity : AppCompatActivity() {
         fileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
         val fileAccessFactory  = FileAccessFactory.getFile()
         fileAccessFactory.createFile(this,fileRequest){
-            onSuccess { uri, file ->
-                val text = "hahahhahahha"
-         /*       contentResolver.acquireContentProviderClient(uri!!)?.use { providerClient->
-                        providerClient.openFile(uri,"w")?.use {
-                            FileWriter(it.fileDescriptor).write(text)
+            onScopedSuccess { uri ->
+                uri?.let {
+                    val text = "hahahhahahha"
+                    contentResolver.openOutputStream(uri as Uri)?.use { outputStream->
+                        text.byteInputStream().use {
+                            it.copyTo(outputStream)
+                        }
                     }
-                }*/
-               /*  contentResolver.openFileDescriptor(uri!!,"w")?.use {
-                     it.fileDescriptor.sync()
-                }*/
-                contentResolver.openOutputStream(uri!!)?.use {outputStream->
-                    text.byteInputStream().use {
-                        it.copyTo(outputStream)
-                    }
-                   // it.write(text.toByteArray())
+                    com.mml.core.showToast("创建成功： $uri")
                 }
-                com.mml.core.showToast("创建成功： $uri")
+            }
+            onLegacySuccess {file->
+                file?.let {
+                    "sssss".byteInputStream().use {input->
+                        file.outputStream().use {output->
+                            input.copyTo(output)
+                        }
+                    }
+                    com.mml.core.showToast("创建成功： ${file.absolutePath}")
+
+                }
             }
             onFailure {
                 println(it.toString())
@@ -53,13 +55,16 @@ class StorageActivity : AppCompatActivity() {
     fun rename(view: View) {
         val sourceFileRequest= FileRequest(file)
         sourceFileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
-        val dstFileRequest= FileRequest(sourceFileRequest.file)
+        val dstFileRequest= FileRequest(File("hahha.txt"))
         dstFileRequest.displayName = "hahha.txt"
         dstFileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
         val fileAccessFactory  = FileAccessFactory.getFile()
         fileAccessFactory.renameFileTo(this,sourceFileRequest,dstFileRequest){
-            onSuccess{uri, file ->
+            onScopedSuccess{ uri ->
                 com.mml.core.showToast("成功$uri")
+            }
+            onLegacySuccess {
+                com.mml.core.showToast("成功${it?.absolutePath}")
             }
             onFailure {
                 com.mml.core.showToast("失败$it")
@@ -71,8 +76,11 @@ class StorageActivity : AppCompatActivity() {
         fileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
         val fileAccessFactory  = FileAccessFactory.getFile()
         fileAccessFactory.deleteFile(this,fileRequest){
-            onSuccess { uri, file ->
+            onScopedSuccess { uri ->
                 com.mml.core.showToast("成功$uri")
+            }
+            onLegacySuccess {
+                com.mml.core.showToast("成功${it?.absolutePath}")
             }
             onFailure {
                 com.mml.core.showToast("失败$it")
@@ -82,13 +90,15 @@ class StorageActivity : AppCompatActivity() {
     fun copy(view: View) {
         val fileRequest= FileRequest(file)
         fileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
-        val dstFileRequest= FileRequest(File("haha1.txt"))
+        val dstFileRequest= FileRequest(File("${System.currentTimeMillis()}.txt"))
         dstFileRequest.dirType = Environment.DIRECTORY_DOWNLOADS
         val fileAccessFactory  = FileAccessFactory.getFile()
         fileAccessFactory.copyFile(this,fileRequest,dstFileRequest){
-            onSuccess { uri, _ ->
+            onScopedSuccess { uri ->
                 com.mml.core.showToast("成功：$uri")
-
+            }
+            onLegacySuccess {
+                com.mml.core.showToast("成功${it?.absolutePath}")
             }
             onFailure {
                 com.mml.core.showToast("失败$it")

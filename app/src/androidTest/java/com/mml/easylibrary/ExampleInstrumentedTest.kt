@@ -34,7 +34,7 @@ class ExampleInstrumentedTest {
         val fileAccessFactory  = FileAccessFactory.getFile()
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         fileAccessFactory.createFile(appContext,fileRequest){
-            onSuccess { uri, file ->
+            onScopedSuccess { uri, file ->
                 val text = "hahahhahahha"
                 appContext.contentResolver.openOutputStream(uri!!)?.use {
                     it.bufferedWriter().write(text)

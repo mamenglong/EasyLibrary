@@ -21,3 +21,10 @@ inline fun Boolean?.no(block: () -> Unit): Boolean? {
     if (this != true) block()
     return this
 }
+
+infix fun <T> Boolean.then(param: T): T? = if (this) param else null
+fun main(){
+    1 shl 2
+    val ss =null
+    false then ss?:1
+}

@@ -1,10 +1,10 @@
 package com.ml.custom.scopedstorage.impl
 
 import android.content.Context
-import com.ml.custom.scopedstorage.BaseRequest
-import com.ml.custom.scopedstorage.FileRequest
-import com.ml.custom.scopedstorage.FileResponse
-import com.ml.custom.scopedstorage.IFile
+import android.os.Environment
+import com.ml.custom.scopedstorage.*
+import java.io.File
+import java.io.FileNotFoundException
 
 /**
  * Author: Menglong Ma
@@ -20,18 +20,62 @@ object StorageLegacy: IFile {
         baseRequest: T,
         block:FileResponse.()->Unit
     ) {
-        baseRequest as FileRequest
-        val file = baseRequest.file
-        val path = baseRequest.path
+        val (response,target,dir) = init(baseRequest, block)
+        dir?: kotlin.run {
+            return
+        }
+        target!!
+        val result=target.createNewFile()
+        if (result) {
+            response.onLegacySuccess(target)
+        }else{
+            response.onFailure(FileAlreadyExistsException(target))
+        }
     }
-
+   data class Result(
+       val response: FileResponse,
+       val file: File?,
+       val dir:File?,
+   )
+    private fun init(baseRequest: BaseRequest, block:FileResponse.()->Unit):Result{
+        baseRequest as FileRequest
+        val response = fileResponse(block)
+        val file = baseRequest.file
+        var target:File? = null
+        val dir=Environment.getExternalStoragePublicDirectory(baseRequest.dirType)
+        dir?.let {
+            if (!it.exists()){
+                it.mkdirs()
+            }
+            target = File(dir,file.absolutePath)
+            target!!.parentFile.mkdirs()
+        } ?: kotlin.run {
+            response.onFailure(FileNotFoundException("${baseRequest.dirType} dir does not exist."))
+        }
+        return Result(response,target,dir)
+    }
     override fun <T : BaseRequest> renameFileTo(
         context: Context,
-        where: T,
-        baseRequest: T,
+        sourceRequest: T,
+        targetRequest: T,
         block:FileResponse.()->Unit
     ) {
-        
+        val (response,source,dir) = init(sourceRequest, block)
+        dir?: kotlin.run {
+            return
+        }
+        source!!
+        if (!source.exists()){
+            response.onFailure(FileNotFoundException("${source.absolutePath} does not exist."))
+            return
+        }
+        val target = File(dir,targetRequest.file.absolutePath)
+        val result= source.renameTo(target)
+        if (result) {
+            response.onLegacySuccess(target)
+        }else{
+            response.onFailure(Exception("fail to rename ${target.absolutePath}."))
+        }
     }
 
     override fun <T : BaseRequest> copyFile(
@@ -40,7 +84,29 @@ object StorageLegacy: IFile {
         targetRequest: T,
         block:FileResponse.()->Unit
     ) {
-        TODO("Not yet implemented")
+        val (response,source,dir) = init(sourceRequest, block)
+        dir?: kotlin.run {
+            return
+        }
+        source!!
+        if (!source.exists()){
+            response.onFailure(FileNotFoundException("${source.absolutePath} does not exist."))
+            return
+        }
+        val target = File(dir,targetRequest.file.absolutePath)
+        target.parentFile.mkdirs()
+        if (target.exists()){
+            response.onFailure(FileAlreadyExistsException(target))
+            return
+        } else{
+            target.createNewFile()
+        }
+        source.inputStream().use {input->
+            target.outputStream().use {
+                input.copyTo(it)
+            }
+        }
+        response.onLegacySuccess(target)
     }
 
     override fun <T : BaseRequest> deleteFile(
@@ -48,7 +114,20 @@ object StorageLegacy: IFile {
         baseRequest: T,
         block:FileResponse.()->Unit
     ) {
-        TODO("Not yet implemented")
+        val (response,target,dir) = init(baseRequest, block)
+        dir?: kotlin.run {
+            return
+        }
+        target!!
+        if (target.exists()){
+            if (target.delete()){
+                response.onLegacySuccess(target)
+            }else{
+                response.onFailure(Exception("fail to delete ${target.absolutePath}."))
+            }
+        }else{
+            response.onFailure(FileNotFoundException("${target.absolutePath} does not exist."))
+        }
     }
 
     override fun <T : BaseRequest> queryFile(
