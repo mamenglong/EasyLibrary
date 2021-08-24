@@ -249,12 +249,7 @@ internal object FileUtils {
     fun file2byte(file: File): ByteArray? {
         var bytes: ByteArray?
         val inp = FileInputStream(file)
-        val length = file.length() as Int
-        if (length > Integer.MAX_VALUE) {// 当文件的长度超过了int的最大值
-            inp.close()
-            return null
-        }
-        bytes = inp.readBytes(length)
+        bytes = inp.readBytes()
         closeIO(inp)
         return bytes
     }

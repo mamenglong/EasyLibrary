@@ -4,9 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.mml.easylibrary.R
+import com.mml.easylibrary.databinding.ActivityCoroutinesBinding
 import com.mml.easylibrary.showToast
 import com.mml.retrofitcoroutinedsllibrary.*
-import kotlinx.android.synthetic.main.activity_coroutines.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -14,10 +14,12 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 class CoroutinesActivity : AppCompatActivity()  {
+    private lateinit var binding:ActivityCoroutinesBinding
     val TAG="CoroutinesActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_coroutines)
+        binding = ActivityCoroutinesBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initASentenceOneDay()
     }
     private fun initASentenceOneDay() {
@@ -38,8 +40,8 @@ class CoroutinesActivity : AppCompatActivity()  {
             ioScope {
                 result = ApiCreate.create<API>().aSentenceOneDay()
                 onSuccess {
-                    tv_content.text = it.content
-                    tv_note.text = it.note
+                    binding.tvContent.text = it.content
+                    binding.tvNote.text = it.note
                     Log.i(TAG, "result = ${it}")
                 }
                 onTimeOut{

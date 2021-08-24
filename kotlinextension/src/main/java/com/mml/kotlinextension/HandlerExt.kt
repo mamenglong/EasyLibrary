@@ -21,7 +21,7 @@ fun delayRun(delayMillis: Long, looper: Looper? = Looper.myLooper(), block: Func
         Looper.prepare()
         clooper = Looper.myLooper() ?: Looper.getMainLooper()
     }
-    val handler=Handler(clooper)
+    val handler=Handler(clooper!!)
     handler.postDelayed(block, delayMillis)
     return handler
 }
@@ -44,7 +44,7 @@ fun loopRun(interval:Long,looper: Looper?= Looper.myLooper(),runFirst: Boolean=t
         Looper.prepare()
         clooper = Looper.myLooper() ?: Looper.getMainLooper()
     }
-    val handler=Handler(clooper)
+    val handler=Handler(clooper!!)
     val runnable=object :Runnable{
         override fun run() {
             block.invoke()

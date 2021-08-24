@@ -99,7 +99,7 @@ fun Context.openWirelessSettings() {
  */
 fun Context.isConnected(): Boolean {
     var info = this.getActiveNetworkInfo()
-    return info.isConnected
+    return info?.isConnected?:false
 }
 
 /**
@@ -123,7 +123,7 @@ fun Context.startHomeActivity() {
 
 
 @SuppressLint("MissingPermission")
-private fun Context.getActiveNetworkInfo(): NetworkInfo {
+private fun Context.getActiveNetworkInfo(): NetworkInfo? {
     var manager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     return manager.activeNetworkInfo
 }

@@ -219,17 +219,16 @@ ext.deps = deps
 
 def addRepos(RepositoryHandler handler) {
     handler.google()
-    handler.jcenter()
     handler.mavenCentral()
     handler.maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     handler.maven {
         url 'https://maven.google.com/'
         name 'Google'
     }
-    handler.maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+    handler.maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
     handler.maven { url "https://jitpack.io" }
     //Bmob的maven仓库地址--必填
     handler.maven { url "https://gitee.com/mamenglong/bmob-android-sdk/raw/master" }
-    handler.maven { url 'https://dl.bintray.com/umsdk/release' }
+    handler.maven { url 'https://repo1.maven.org/maven2/' }
 }
 ext.addRepos = this.&addRepos

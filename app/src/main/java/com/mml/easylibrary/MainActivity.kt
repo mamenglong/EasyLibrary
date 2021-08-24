@@ -9,11 +9,11 @@ import com.mml.easyconfig.AndroidConfig
 import com.mml.easyconfig.config.SharedPreferenceDelegate
 import com.mml.easydialog.dialog.*
 import com.mml.easylibrary.coroutines.CoroutinesActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import com.mml.easylibrary.databinding.ActivityMainBinding
 import java.security.Permission
 
 class MainActivity : AppCompatActivity() {
-
+    private lateinit var binding:ActivityMainBinding
     var aa by SharedPreferenceDelegate(spName = "test",default = 0)
     var ss by SharedPreferenceDelegate.json<User?>(null,"asad")
 
@@ -23,7 +23,8 @@ class MainActivity : AppCompatActivity() {
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         AndroidConfig.initialize(this)
         initView()
         requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE),0)
@@ -38,9 +39,9 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this@MainActivity,cls)
                 startActivity(intent)
             }
-            linear.addView(button)
+            binding.linear.addView(button)
         }
-        easy_dialog.setOnClickListener {
+        binding.easyDialog.setOnClickListener {
             /*            val dialog= CustomDialog()
                             .setLayoutRes(R.layout.dialog_easy_sample)
                             .setOnDismissCallback {  showToast("onDismissCallback") }
@@ -54,13 +55,13 @@ class MainActivity : AppCompatActivity() {
                 .convert { it-> }
                 .show(fragmentManager = supportFragmentManager)
         }
-        simple_dialog.setOnClickListener {
+        binding.simpleDialog.setOnClickListener {
             val siampleDialog=EasyDialog.init<SimpleEditTextDialog>(EasyDialog.DialogType.SIMPLEEDITTEXT).init(this)
 
                 .show()
         }
         val item= arrayListOf<Any>(false,"2",3,"4","5")
-        simple_dialog_list.setOnClickListener {
+        binding.simpleDialogList.setOnClickListener {
             val siampleDialog=EasyDialog.init<SimpleListDialog>(EasyDialog.DialogType.LIST).init(this)
                 .setItems(item)
                 .setOnConfirmClickCallback {
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
         }
-        simple_dialog_single.setOnClickListener {
+        binding.simpleDialogSingle.setOnClickListener {
             val siampleDialog=EasyDialog.init<SimpleSingleChoiceDialog>(EasyDialog.DialogType.SINGLECHOICE).init(this)
                 .setItems(item)
                 .setDefaultSelect(3)
@@ -77,17 +78,17 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
         }
-        simple_dialog_multi.setOnClickListener {
+        binding.simpleDialogMulti.setOnClickListener {
             val siampleDialog=EasyDialog.init<SimpleMultiChoiceDialog>(EasyDialog.DialogType.MULTICHOICE).init(this)
                 .setItems(item)
                 .show()
         }
         Config.name="nihao"
-        test.text=Config.name
+        binding.test.text=Config.name
         Config.users=User("4444")
         aa=9
-        test.text=test.text.toString()+Config.users.toString()
+        binding.test.text=binding.test.text.toString()+Config.users.toString()
         ss=User("34rr")
-        test.text=test.text.toString()+ss.toString()
+        binding.test.text=binding.test.text.toString()+ss.toString()
     }
 }
